@@ -61,8 +61,6 @@ coreo_uni_util_jsrunner "security-groups" do
   }'
   function <<-EOH
 const result = {};
-result['violations'] = {};
-
 const activeSecurityGroups = [];
 const unusedSecGroups = [];
 
@@ -84,6 +82,7 @@ Object.keys(json_input.active_groups_report).forEach((key) => {
 });
 
 Object.keys(json_input.security_groups_report).forEach((key) => {
+    const tags = json_input.security_groups_report[key].tags;
     const violations = json_input.security_groups_report[key].violations["get-security-groups"];
     violations.violating_object.forEach((item) => {
         const currectSecGroup = item.object;
@@ -102,13 +101,12 @@ Object.keys(json_input.security_groups_report).forEach((key) => {
                 'region': violations.region
             }
             },
-            tags: []
+            tags: tags
         };
         result[key] = notUsedSecurityGroupAlert;
     });
 });
 
-console.log(unusedSecGroups);
 console.log(result);
 callback(result);
   EOH
