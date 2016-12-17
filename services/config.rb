@@ -88,6 +88,8 @@ Object.keys(json_input.security_groups_report).forEach((key) => {
     });
 });
 
+console.log(activeSecurityGroups);
+
 Object.keys(json_input.security_groups_report).forEach((key) => {
     const tags = json_input.security_groups_report[key].tags;
     const violations = json_input.security_groups_report[key].violations["get-security-groups"];
