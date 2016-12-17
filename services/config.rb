@@ -12,6 +12,21 @@ coreo_aws_advisor_alert "get-security-groups" do
   alert_when [//]
 end
 
+coreo_aws_advisor_alert "get-active-security-groups-for-instances" do
+  action :define
+  service :ec2
+  display_name "List of active security groups for instances"
+  description "Gets all active security groups"
+  category "Inventory"
+  suggested_action "None."
+  level "Informational"
+  objectives ["spot_instance_requests"]
+  audit_objects ["spot_instance_request_set.network_interface_set.security_group_id"]
+  operators ["=~"]
+  alert_when [//]
+end
+
+
 coreo_aws_advisor_ec2 "advise-ec2" do
   action :advise
   alerts ["get-security-groups"]
@@ -41,8 +56,8 @@ end
 coreo_uni_util_jsrunner "security-groups" do
   action :run
   json_input '{
-      "security_groups_report":"STACK::coreo_aws_advisor_ec2.advise-ec2.report",
-      "active_groups_report": "STACK::coreo_aws_advisor_elb.advise-elb.report",
+      "security_groups_report":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report",
+      "active_groups_report": "COMPOSITE::coreo_aws_advisor_elb.advise-elb.report",
       "composite name":"PLAN::stack_name",
       "plan name":"PLAN::name",
       "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks"
