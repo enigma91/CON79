@@ -37,3 +37,14 @@ coreo_aws_advisor_elb "advise-elb" do
   alerts ["get-active-security-groups-from-elb"]
   regions ${AUDIT_AWS_ELB_REGIONS}
 end
+
+coreo_uni_util_jsrunner "cloudtrail-aggregate" do
+  action :run
+  json_input '{ "security_groups_report":"STACK::coreo_aws_advisor_ec2.advise-ec2.report",
+                "active_groups_report": "STACK::coreo_aws_advisor_elb.advise-elb.report"}'
+  function <<-EOH
+var result;
+console.log(util.inspect(json_input, {showHidden: false, depth: null}));
+callback(result);
+  EOH
+end
