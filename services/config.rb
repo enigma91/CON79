@@ -37,3 +37,33 @@ coreo_aws_advisor_elb "advise-elb" do
   alerts ["get-active-security-groups-from-elb"]
   regions ${AUDIT_AWS_ELB_REGIONS}
 end
+
+coreo_uni_util_jsrunner "security-groups" do
+  json_input '{ "security_groups_report":"STACK::coreo_aws_advisor_ec2.advise-ec2.report",
+               "active_groups_report": "STACK::coreo_aws_advisor_elb.advise-elb.report"}'
+  function <<-EOH
+
+  const secGroups = [];
+  const activeSecurityGroups = [];
+  const 
+
+  Object.keys(json_input.security_groups_report).forEach((key) => {
+    const violations = json_input.security_groups_report[key].violations.get-security-groups.violating_object;
+    violations.forEach((item) => { secGroups.push(item.object); });
+  });
+
+  Object.keys(json_input.active_groups_report).forEach((key) => {
+   const violation = json_input.active_groups_report[key].violations.get-active-security-groups-from-elb;
+   violation.violating_object.forEach((obj) => {
+     obj.object.forEach((secGroup) => { activeSecurityGroups.push(secGroup); })
+   });
+  });
+
+
+
+
+
+  callback(result);
+
+  EOH
+end
