@@ -16,7 +16,7 @@ coreo_aws_advisor_alert "get-active-security-groups-for-instances" do
   action :define
   service :ec2
   display_name "List of active security groups for instances"
-  description "Gets all active security groups"
+  description "Gets all active security groupsfor instances"
   category "Inventory"
   suggested_action "None."
   level "Informational"
@@ -29,7 +29,7 @@ end
 
 coreo_aws_advisor_ec2 "advise-ec2" do
   action :advise
-  alerts ["get-security-groups"]
+  alerts ["get-security-groups", "get-active-security-groups-for-instances"]
   regions ${AUDIT_AWS_ELB_REGIONS}
 end
 
@@ -57,7 +57,7 @@ coreo_uni_util_jsrunner "security-groups" do
   action :run
   json_input '{
       "security_groups_report":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report",
-      "active_groups_report": "COMPOSITE::coreo_aws_advisor_elb.advise-elb.report",
+      "active_groups_report":"COMPOSITE::coreo_aws_advisor_elb.advise-elb.report",
       "composite name":"PLAN::stack_name",
       "plan name":"PLAN::name",
       "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks"
