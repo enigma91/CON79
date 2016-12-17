@@ -83,7 +83,7 @@ const getActiveSecGroup = (violation) => {
 };
 
 Object.keys(json_input.active_groups_report).forEach((key) => {
-  const violation = json_input.active_groups_report[key].violations['get-active-security-groups-from-elb']);
+  const violation = json_input.active_groups_report[key].violations['get-active-security-groups-from-elb'];
   if (!violation) return;
   violation.violating_object.forEach((obj) => {
       obj.object.forEach((secGroup) => {
