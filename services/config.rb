@@ -71,42 +71,20 @@ const groupIsActive = (groupId) => {
     return false;
 };
 
-
-const getActiveSecGroup = (violation) => {
-  if (!violation) return;
-  violation.violating_object.forEach((obj) => {
-      obj.object.forEach((secGroup) => {
-        if (secGroup.group_id) activeSecurityGroups.push(secGroup.group_id);
-        else activeSecurityGroups.push(secGroup);
-      })
-  });
-};
-
 Object.keys(json_input.active_groups_report).forEach((key) => {
-  const violation = json_input.active_groups_report[key].violations['get-active-security-groups-from-elb'];
-  if (!violation) return;
-  violation.violating_object.forEach((obj) => {
-      obj.object.forEach((secGroup) => {
-        activeSecurityGroups.push(secGroup);
-      })
-  });
-});
-Object.keys(json_input.security_groups_report).forEach((key) => {
-    const violation = json_input.security_groups_report[key].violations['get-active-security-groups-for-instances'];
+    const violation = json_input.active_groups_report[key].violations['get-active-security-groups-from-elb'];
     if (!violation) return;
-      violation.violating_object.forEach((obj) => {
-          activeSecurityGroups.push(obj.group_id);
-      });
-});
-
-
-
-Object.keys(json_input.active_groups_report).forEach((key) => {
-    const violation = json_input.active_groups_report[key].violations["get-active-security-groups-from-elb"];
     violation.violating_object.forEach((obj) => {
         obj.object.forEach((secGroup) => {
             activeSecurityGroups.push(secGroup);
         })
+    });
+});
+Object.keys(json_input.security_groups_report).forEach((key) => {
+    const violation = json_input.security_groups_report[key].violations['get-active-security-groups-for-instances'];
+    if (!violation) return;
+    violation.violating_object.forEach((obj) => {
+        activeSecurityGroups.push(obj.group_id);
     });
 });
 
