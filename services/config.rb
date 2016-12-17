@@ -15,13 +15,13 @@ end
 coreo_aws_advisor_alert "get-active-security-groups-for-instances" do
   action :define
   service :ec2
-  display_name "List of active security groups for instances"
-  description "Gets all active security groupsfor instances"
+  display_name "EC2 Instance Inventory"
+  description "This rule performs an inventory on all EC2 instances in the target AWS account."
   category "Inventory"
   suggested_action "None."
-  level "Informational"
+  level "Information"
   objectives ["instances"]
-  audit_objects ["reservation_set.instances_set.group_set"]
+  audit_objects ["reservation_set.instances_set.instance_id"]
   operators ["=~"]
   alert_when [//]
 end
