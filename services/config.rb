@@ -45,7 +45,7 @@ coreo_uni_util_jsrunner "security-groups" do
 
   const secGroups = [];
   const activeSecurityGroups = [];
-  const 
+  const unusedSecGroups = [];
 
   Object.keys(json_input.security_groups_report).forEach((key) => {
     const violations = json_input.security_groups_report[key].violations.get-security-groups.violating_object;
@@ -58,9 +58,6 @@ coreo_uni_util_jsrunner "security-groups" do
      obj.object.forEach((secGroup) => { activeSecurityGroups.push(secGroup); })
    });
   });
-
-
-
 
 
   callback(result);
