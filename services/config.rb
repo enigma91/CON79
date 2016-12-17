@@ -57,16 +57,10 @@ coreo_uni_util_jsrunner "security-groups" do
   action :run
   json_input '{
       "security_groups_report":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report",
-      "active_groups_report":"COMPOSITE::coreo_aws_advisor_elb.advise-elb.report",
-      "composite name":"PLAN::stack_name",
-      "plan name":"PLAN::name",
-      "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks"
+      "active_groups_report":"COMPOSITE::coreo_aws_advisor_elb.advise-elb.report"
   }'
   function <<-EOH
 const result = {};
-result['composite name'] = json_input['composite name'];
-result['plan name'] = json_input['plan name'];
-result['number_of_checks'] = json_input['number_of_checks'];
 result['violations'] = {};
 
 const activeSecurityGroups = [];
