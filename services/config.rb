@@ -72,6 +72,24 @@ const groupIsActive = (groupId) => {
 };
 
 
+const getActiveSecGroup = (violation) => {
+  if (!violation) return;
+  violation.violating_object.forEach((obj) => {
+      obj.object.forEach((secGroup) => {
+          activeSecurityGroups.push(secGroup);
+      })
+  });
+};
+
+Object.keys(json_input.active_groups_report).forEach((key) => {
+    getActiveSecGroup(json_input.active_groups_report[key].violations['get-active-security-groups-from-elb']);
+});
+Object.keys(json_input.security_groups_report).forEach((key) => {
+    getActiveSecGroup(json_input.security_groups_report[key].violations['get-active-security-groups-for-instances']);
+});
+
+
+
 Object.keys(json_input.active_groups_report).forEach((key) => {
     const violation = json_input.active_groups_report[key].violations["get-active-security-groups-from-elb"];
     violation.violating_object.forEach((obj) => {
