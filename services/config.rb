@@ -39,9 +39,19 @@ coreo_aws_advisor_elb "advise-elb" do
 end
 
 coreo_uni_util_jsrunner "security-groups" do
-  json_input '{ "security_groups_report":"STACK::coreo_aws_advisor_ec2.advise-ec2.report",
-               "active_groups_report": "STACK::coreo_aws_advisor_elb.advise-elb.report"}'
+  json_input '{
+      "security_groups_report":"STACK::coreo_aws_advisor_ec2.advise-ec2.report",
+      "active_groups_report": "STACK::coreo_aws_advisor_elb.advise-elb.report",
+      "composite name":"PLAN::stack_name",
+      "plan name":"PLAN::name",
+      "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks"
+  }'
   function <<-EOH
+  var result = {};
+  result['composite name'] = json_input['composite name'];
+  result['plan name'] = json_input['plan name'];
+  result['number_of_checks'] = json_input['number_of_checks'];
+  result['violations'] = {};
 
   const secGroups = [];
   const activeSecurityGroups = [];
@@ -59,8 +69,24 @@ coreo_uni_util_jsrunner "security-groups" do
    });
   });
 
+  var notUsedSecurityGroupAlert =
+    { violations:
+      { 'not-used-sequrity-groups':
+         {
+            'display_name': 'Security group is not used',
+            'description': 'Security group is not used anywhere',
+            'category': 'Audit',
+            'suggested_action': 'Remove this security group',
+            'level': 'Warning'
+         }
+      },
+      tags: []
+    };
+  var key = 'not-used-sequrity-groups';
+  result['violations'][key] = notUsedSecurityGroupAlert;
+}
 
-  callback(result);
-
+console.log(result);
+callback(result);
   EOH
 end
