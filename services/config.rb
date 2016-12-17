@@ -47,56 +47,58 @@ coreo_uni_util_jsrunner "security-groups" do
       "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks"
   }'
   function <<-EOH
-  var result = {};
-  result['composite name'] = json_input['composite name'];
-  result['plan name'] = json_input['plan name'];
-  result['number_of_checks'] = json_input['number_of_checks'];
-  result['violations'] = {};
+const result = {};
+result['composite name'] = json_input['composite name'];
+result['plan name'] = json_input['plan name'];
+result['number_of_checks'] = json_input['number_of_checks'];
+result['violations'] = {};
 
-  const secGroups = [];
-  const activeSecurityGroups = [];
-  const unusedSecGroups = [];
+const activeSecurityGroups = [];
+const unusedSecGroups = [];
 
-  Object.keys(json_input.security_groups_report).forEach((key) => {
-    const violations = json_input.security_groups_report[key].violations.get-security-groups.violating_object;
-    violations.forEach((item) => { secGroups.push(item.object); });
-  });
-
-  Object.keys(json_input.active_groups_report).forEach((key) => {
-   const violation = json_input.active_groups_report[key].violations.get-active-security-groups-from-elb;
-   violation.violating_object.forEach((obj) => {
-     obj.object.forEach((secGroup) => { activeSecurityGroups.push(secGroup); })
-   });
-  });
-
-  const groupIsActive = (groupId) => {
+const groupIsActive = (groupId) => {
     for (let activeGroupId of activeSecurityGroups) {
-      if (activeGroupId === groupId) return true;
+        if (activeGroupId === groupId) return true;
     }
     return false;
-  };
+};
 
-  secGroups.forEach((secGroup) => {
-    if (!groupIsActive(secGroup.group_id)) unusedSecGroups.push(secGroup);
-  });
 
-  var notUsedSecurityGroupAlert =
-    { violations:
-      { 'not-used-sequrity-groups':
-         {
-            'display_name': 'Security group is not used',
-            'description': 'Security group is not used anywhere',
-            'category': 'Audit',
-            'suggested_action': 'Remove this security group',
-            'level': 'Warning'
-         }
-      },
-      tags: []
-    };
-  var key = 'not-used-sequrity-groups';
-  result['violations'][key] = notUsedSecurityGroupAlert;
-}
+Object.keys(json_input.active_groups_report).forEach((key) => {
+    const violation = json_input.active_groups_report[key].violations["get-active-security-groups-from-elb"];
+    violation.violating_object.forEach((obj) => {
+        obj.object.forEach((secGroup) => {
+            activeSecurityGroups.push(secGroup);
+        })
+    });
+});
 
+Object.keys(json_input.security_groups_report).forEach((key) => {
+    const violations = json_input.security_groups_report[key].violations["get-security-groups"];
+    violations.violating_object.forEach((item) => {
+        const currectSecGroup = item.object;
+        if (groupIsActive(currectSecGroup.group_id)) return;
+
+        unusedSecGroups.push(currectSecGroup);
+        const notUsedSecurityGroupAlert = {
+            violations:
+            { 'not-used-sequrity-groups':
+            {
+                'display_name': 'Security group is not used',
+                'description': 'Security group is not used anywhere',
+                'category': 'Audit',
+                'suggested_action': 'Remove this security group',
+                'level': 'Warning',
+                'region': violations.region
+            }
+            },
+            tags: []
+        };
+        result[key] = notUsedSecurityGroupAlert;
+    });
+});
+
+console.log(unusedSecGroups);
 console.log(result);
 callback(result);
   EOH
