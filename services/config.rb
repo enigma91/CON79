@@ -56,8 +56,8 @@ end
 coreo_uni_util_jsrunner "security-groups" do
   action :run
   json_input '{
-      "security_groups_report":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report",
-      "active_groups_report":"COMPOSITE::coreo_aws_advisor_elb.advise-elb.report"
+      "security_groups_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
+      "active_groups_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
   }'
   function <<-EOH
 const result = {};
