@@ -14,7 +14,7 @@ end
 
 coreo_aws_advisor_ec2 "advise-ec2" do
   action :advise
-  alerts ["get-security-groups", "get-active-security-groups"]
+  alerts ["get-security-groups"]
   regions ${AUDIT_AWS_ELB_REGIONS}
 end
 
