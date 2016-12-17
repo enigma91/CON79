@@ -20,8 +20,8 @@ coreo_aws_advisor_alert "get-active-security-groups-for-instances" do
   category "Inventory"
   suggested_action "None."
   level "Informational"
-  objectives ["spot_instance_requests"]
-  audit_objects ["spot_instance_request_set.network_interface_set.security_group_id"]
+  objectives ["instances"]
+  audit_objects ["reservation_set.group_set"]
   operators ["=~"]
   alert_when [//]
 end
@@ -76,7 +76,8 @@ const getActiveSecGroup = (violation) => {
   if (!violation) return;
   violation.violating_object.forEach((obj) => {
       obj.object.forEach((secGroup) => {
-          activeSecurityGroups.push(secGroup);
+        if (secGroup.group_id) activeSecurityGroups.push(secGroup.group_id);
+        else activeSecurityGroups.push(secGroup);
       })
   });
 };
