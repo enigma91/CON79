@@ -69,6 +69,17 @@ coreo_uni_util_jsrunner "security-groups" do
    });
   });
 
+  const groupIsActive = (groupId) => {
+    for (let activeGroupId of activeSecurityGroups) {
+      if (activeGroupId === groupId) return true;
+    }
+    return false;
+  };
+
+  secGroups.forEach((secGroup) => {
+    if (!groupIsActive(secGroup.group_id)) unusedSecGroups.push(secGroup);
+  });
+
   var notUsedSecurityGroupAlert =
     { violations:
       { 'not-used-sequrity-groups':
