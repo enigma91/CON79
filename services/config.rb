@@ -21,7 +21,7 @@ coreo_aws_advisor_alert "get-active-security-groups-for-instances" do
   suggested_action "None."
   level "Information"
   objectives ["instances"]
-  audit_objects ["reservation_set.instances_set.instance_id"]
+  audit_objects ["reservation_set.instances_set.group_set.group_id"]
   operators ["=~"]
   alert_when [//]
 end
