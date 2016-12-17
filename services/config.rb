@@ -65,20 +65,25 @@ const activeSecurityGroups = [];
 const unusedSecGroups = [];
 
 const groupIsActive = (groupId) => {
-    for (let activeGroupId of activeSecurityGroups) {
-        if (activeGroupId === groupId) return true;
-    }
-    return false;
+  for (let activeGroupId of activeSecurityGroups) {
+      if (activeGroupId === groupId) return true;
+  }
+  return false;
 };
 
+const getActiveSecGroup = (violationId) => {
+  const violation = json_input.active_groups_report[key].violations[violationId];
+  if (!violation) return;
+  violation.violating_object.forEach((obj) => {
+      obj.object.forEach((secGroup) => {
+          activeSecurityGroups.push(secGroup);
+      })
+  });
+};
 
 Object.keys(json_input.active_groups_report).forEach((key) => {
-    const violation = json_input.active_groups_report[key].violations["get-active-security-groups-from-elb"];
-    violation.violating_object.forEach((obj) => {
-        obj.object.forEach((secGroup) => {
-            activeSecurityGroups.push(secGroup);
-        })
-    });
+    getActiveSecGroup('get-active-security-groups-for-instances');
+    getActiveSecGroup('get-active-security-groups-from-elb');
 });
 
 Object.keys(json_input.security_groups_report).forEach((key) => {
