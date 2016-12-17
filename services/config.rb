@@ -76,6 +76,7 @@ Object.keys(json_input.active_groups_report).forEach((key) => {
     if (!violation) return;
     violation.violating_object.forEach((obj) => {
         obj.object.forEach((secGroup) => {
+console.log(obj)
             activeSecurityGroups.push(secGroup);
         })
     });
@@ -84,6 +85,7 @@ Object.keys(json_input.security_groups_report).forEach((key) => {
     const violation = json_input.security_groups_report[key].violations['get-active-security-groups-for-instances'];
     if (!violation) return;
     violation.violating_object.forEach((obj) => {
+console.log(obj)
         activeSecurityGroups.push(obj.group_id);
     });
 });
